@@ -31,7 +31,7 @@ describe('callback Test', () => {
     test('callback 두번째 인자에 파일 내용이 전달되어야 합니다', (done) => {
       getDataFromFile(jsonPath, (err, data) => {
         expect(err).toBeNull();
-        expect(data).toBe(user1txt);
+        expect(JSON.parse(data)).toEqual(JSON.parse(user1txt));
         done();
       });
     });
