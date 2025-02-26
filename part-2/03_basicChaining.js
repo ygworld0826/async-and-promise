@@ -1,16 +1,36 @@
-const path = require('path');
-const { getDataFromFilePromise } = require('./02_promiseConstructor');
+const newsURL = 'http://localhost:4999/data/latest';
+const weatherURL = 'http://localhost:4999/data/weather';
 
-const user1Path = path.join(__dirname, 'files/user1.json');
-const user2Path = path.join(__dirname, 'files/user2.json');
-
-// HINT: getDataFromFilePromise(user1Path) 및 getDataFromFilePromise(user2Path)를 이용해 작성합니다
-const readAllUsersChaining = () => {
-  // TODO: 여러개의 Promise를 then으로 연결하여 작성합니다
+function getNewsAndWeather() {
+  return fetch(newsURL)
+    .then(newsResponse => {
+      if (!newsResponse.ok) {
+        throw new Error('뉴스 가져오기 실패');
+      }
+      return newsResponse.json();
+    })
+    .then(newsData => {
+      return fetch(weatherURL)
+        .then(weatherResponse => {
+          if (!weatherResponse.ok) {
+            throw new Error('날씨 가져오기 실패');
+          }
+          return weatherResponse.json();
+        })
+        .then(weatherData => {
+          return {
+            news: newsData,
+            weather: weatherData
+          };
+        });
+    })
+    .catch(error => {
+      console.error('에러 발생:', error);
+      throw error;
+    });
 }
 
-// readAllUsersChaining();
-
-module.exports = {
-  readAllUsersChaining
+// ✅ Node.js 환경에서 테스트 가능하도록 내보내기
+if (typeof window === 'undefined') {
+  module.exports = { getNewsAndWeather };
 }
